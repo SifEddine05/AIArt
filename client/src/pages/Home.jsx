@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
 
 
@@ -8,7 +8,108 @@ const Home = () => {
     const [search,setSearch]=useState('')
     const [sort,setSort]=useState('')
     const [show,setShow]=useState('Showing all posts ...')// Showing resultat of  ... 
+    const [posts,setPosts]=useState([])
+    const [Tab,setTab]=useState([])
+    const [existe,setExiste]=useState(false)
+    const [indexes , setIndexes]=useState([])
 
+
+    useEffect(()=>{
+         // fetch All the posts 
+         const tableau =[
+            {
+                id:1,
+                name:"Sifou",
+                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            {
+                id:2,
+                name:"Sifou",
+                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            {
+                id:3,
+                name:"Sifou",
+                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            {
+                id:4,
+                name:"Sifou",
+                description:"ahmed sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            {
+                id:5,
+                name:"Sifou",
+                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            {
+                id:6,
+                name:"Sifou",
+                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
+                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+
+            },
+            
+            
+
+        ]
+        setTab(tableau)
+        setPosts(tableau)
+        let T =[0]
+        let cpt=0
+        let j=0
+        let i=0
+        console.log(tableau.length);
+        while (j<tableau.length) {
+            if(cpt===3){
+                T[i]=i
+                i++ 
+                cpt=0
+            }
+            else{
+                cpt++
+            }
+            j++
+
+        }
+        if(cpt!==0){T[i]=i}
+        setIndexes(T)
+        console.log(T);
+        
+
+
+         // if fetch is not vide we put 
+
+        setExiste(true)
+    },[])
+
+
+
+    const Search =(e)=>{
+        setSearch(e.target.value)
+        if(e.target.value !== '')
+        {
+            setShow("Showing resultat of "+e.target.value+" ...")
+            function filter(elem) {
+                return (elem.description.includes(e.target.value) )
+            }
+            setPosts(Tab.filter(filter))
+        }
+        else{
+            setShow('Showing all posts ...')
+        }
+     
+    }
     return ( 
     <div className="w-full mx-auto flex flex-col justify-center items-center">
         <div className="self-start w-[75%] mx-auto">
@@ -18,20 +119,57 @@ const Home = () => {
         <div className="flex justify-around w-[75%] mx-auto items-center mt-10">
             <div className="flex flex-col justify-center items-start w-[75%]">
                 <label htmlFor="search" className="opacity-85 lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px]" > Search Posts</label>
-                <input name="search" type="search" placeholder="Synthwave aeroplane" value={search} onChange={(e)=>{setSearch(e.target.value)}} className="bg-[#C3B5B5] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] w-full rounded-md text-[#000] p-2" />
+                <input name="search" type="search" placeholder="Synthwave aeroplane" value={search} onChange={Search} className="bg-[#C3B5B5] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] w-full rounded-md text-[#000] p-2" />
             </div>      
             <div  className="flex flex-col justify-center items-start ">
                     <label htmlFor="sort" className="opacity-85 lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px]" > Sort By </label>
                     <select value={sort} onChange={(e)=>{setSort(e.target.value)}} name="sort" id="sort" className="lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] hover:cursor-pointer rounded-md p-2 bg-[#C3B5B5]">
                         <option value="rating">Rating</option>
                         <option value="view">Most View</option>
-                        <option value="title" >Title</option>
+                        <option value="title" >Author</option>
                     </select>
             </div>
         </div>
         <h3 className="font-bold lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] mt-5">{show}</h3>
         
-    <div className="carousel w-full">
+ {existe &&   
+        <div className="carousel w-full">
+          { 
+          indexes.map((e)=>{
+           console.log(e);
+            let next = e+1
+            let prec = e-1
+            return( 
+            <div id={"slide"+e} className="carousel-item relative w-[100%] flex justify-between ">
+            <div className="grid grid-cols-3  mt-10 gap-5 mx-auto">
+
+            { posts.slice(e*3,e*3+3).map((elem)=>{
+            return(
+                <Card key={elem.id} />
+            
+        )}) }
+        </div>
+            <div className="absolute flex justify-between items-center transform -translate-y-1/2 left-0 right-0 top-1/2">
+            <a href={"#slide"+prec}  className="btn btn-circle " >❮</a> 
+            <a href={"#slide"+next} className="btn btn-circle">❯</a>
+            </div>
+        </div> )
+          })
+         
+            
+ }
+
+  </div>  
+ }
+    {!existe && 
+    <h1 className="text-center font-extrabold lg:text-[32px] md:text-[28px] sm:text-[24px] text-[20px] lg:mt-20 md:mt-16 sm:mt-12 mt-10">No Post Found</h1>}
+
+    </div> );
+}
+ 
+export default Home;
+
+/*{existe &&   <div className="carousel w-full">
     <div id="slide1" className="carousel-item relative w-full">
         <div className="grid grid-cols-3  mt-10 gap-5 mx-auto">
             <Card />
@@ -76,10 +214,4 @@ const Home = () => {
         <a href="#slide1" className="btn btn-circle cursor-not-allowed" disabled>❯</a>
         </div>
     </div>
-    </div>
-
-    </div> );
-}
- 
-export default Home;
-
+    </div> }*/
