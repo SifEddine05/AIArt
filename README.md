@@ -14,7 +14,7 @@ Simply type in a description of the image you want, and watch as AIArt brings yo
 
 ## Demo
 
-link to demo : https://celebrated-puffpuff-f19158.netlify.app/
+link to demo :https://ai-art-1234-05.netlify.app/
 
 
 ## Deployment
