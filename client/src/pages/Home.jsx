@@ -3,7 +3,6 @@ import Card from "../components/Card";
 
 
 
-
 const Home = () => {
     const [search,setSearch]=useState('')
     const [sort,setSort]=useState('')
@@ -14,67 +13,29 @@ const Home = () => {
     const [indexes , setIndexes]=useState([])
 
 
-    useEffect(()=>{
-         // fetch All the posts 
-         const tableau =[
+    useEffect( ()=>{
+        setShow('Showing all posts ...')
+         fetch("http://localhost:8000/getAllPosts"
+          ).then(res=>{
+            return res.json() ;
+          }).then(data=>{
+            if(data.length===0)
             {
-                id:1,
-                name:"Sifou",
-                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            {
-                id:2,
-                name:"Sifou",
-                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            {
-                id:3,
-                name:"Sifou",
-                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            {
-                id:4,
-                name:"Sifou",
-                description:"ahmed sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            {
-                id:5,
-                name:"Sifou",
-                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            {
-                id:6,
-                name:"Sifou",
-                description:"sdkfjk ksdjffkj ffdsjqlfjjjf  fsdqf dg sd g f g fgd gfd gfd fg fd ",
-                image:"https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-
-            },
-            
-            
-
-        ]
-        setTab(tableau)
-        setPosts(tableau)
-        let T =[0]
-        let cpt=0
+                setExiste(false)  
+            }
+            else{
+                setTab(data)
+                setPosts(data)
+                setExiste(true)
+                let T =[0]
+        let cpt=1
         let j=0
         let i=0
-        console.log(tableau.length);
-        while (j<tableau.length) {
+        while (j<data.length) {
             if(cpt===3){
                 T[i]=i
                 i++ 
-                cpt=0
+                cpt=1
             }
             else{
                 cpt++
@@ -82,15 +43,16 @@ const Home = () => {
             j++
 
         }
-        if(cpt!==0){T[i]=i}
+        if(cpt!==0 ){T[i]=i}
         setIndexes(T)
-        console.log(T);
+            }
+           
+          }).catch(err=>{
+                setExiste(false)
+                setShow('Error in getting Data ')
+          })
         
-
-
-         // if fetch is not vide we put 
-
-        setExiste(true)
+        
     },[])
 
 
@@ -107,6 +69,7 @@ const Home = () => {
         }
         else{
             setShow('Showing all posts ...')
+            setPosts(Tab)
         }
      
     }
@@ -121,14 +84,14 @@ const Home = () => {
                 <label htmlFor="search" className="opacity-85 lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px]" > Search Posts</label>
                 <input name="search" type="search" placeholder="Synthwave aeroplane" value={search} onChange={Search} className="bg-[#C3B5B5] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] w-full rounded-md text-[#000] p-2" />
             </div>      
-            <div  className="flex flex-col justify-center items-start ">
+            {/* <div  className="flex flex-col justify-center items-start ">
                     <label htmlFor="sort" className="opacity-85 lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px]" > Sort By </label>
                     <select value={sort} onChange={(e)=>{setSort(e.target.value)}} name="sort" id="sort" className="lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] hover:cursor-pointer rounded-md p-2 bg-[#C3B5B5]">
                         <option value="rating">Rating</option>
                         <option value="view">Most View</option>
                         <option value="title" >Author</option>
                     </select>
-            </div>
+            </div> */}
         </div>
         <h3 className="font-bold lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] mt-5">{show}</h3>
         
@@ -136,16 +99,17 @@ const Home = () => {
         <div className="carousel w-full">
           { 
           indexes.map((e)=>{
-           console.log(e);
             let next = e+1
             let prec = e-1
+           
             return( 
             <div id={"slide"+e} className="carousel-item relative w-[100%] flex justify-between ">
             <div className="grid grid-cols-3  mt-10 gap-5 mx-auto">
 
             { posts.slice(e*3,e*3+3).map((elem)=>{
             return(
-                <Card key={elem.id} />
+                
+                <Card key={elem._id} name={elem.name} id={elem._id} description={elem.description} image={elem.image} />
             
         )}) }
         </div>

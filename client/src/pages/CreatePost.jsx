@@ -2,6 +2,9 @@ import { useState } from "react";
 import Load from "../assets/preview.png"
 import Loader from "../components/Loader";
 import { surpriseMePrompts } from "../constant";
+import {useNavigate } from "react-router-dom"
+import down from "../assets/download.png"
+import FileSaver from "file-saver";
 const CreatePost = () => {
     const [name,setName]=useState('')
     const [description,setDescription]=useState('')
@@ -9,9 +12,23 @@ const CreatePost = () => {
     const [image,setImage]=useState(Load)//this load photo must uploaded to cloudinary to use his url directly
     const [load ,setLoad]=useState(false)
     const [message , setMsg]=useState('')
+    const navigate = useNavigate()
+
+
+    const Download =()=>{
+        setErr(false)
+        if(image==='')
+        {
+            setMsg('Please generate an image first ')
+            setErr(true)
+
+        }
+        else{
+            FileSaver.saveAs(image , "download-AIArt-Image.png" )
+        }
+    }
     const handleGenerate =()=>{
         setErr(false)
-        console.log(name ,description);
         if(name==='' || description==='')
         {
             setMsg('Please fill all the fildes')
@@ -19,24 +36,60 @@ const CreatePost = () => {
         }
         else{
             // avant traitement 
+            setMsg('Please wait the operation will take 1 or 2 minutes ')
             setLoad(true)
+            setErr(true)
             // generate the image and put it in cloudinary 
-
-            //After traitement 
-           setLoad(false)
-            setImage('https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
+            fetch("http://localhost:8000/createphoto", { 
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                   },
+                   body: JSON.stringify({
+                    "prompt" : description
+                  })
+              }).then(res=>{
+                 return res.json()
+              }).then(data=>{
+                setLoad(false)
+                setErr(false)
+                setImage(data.photo)
+              }).catch(err=>{
+                setErr(true)
+                setMsg("Error in getting file ")
+              })
         }
     }
 
 const handleShare=()=>{
     setErr(false)
-    if(image==Load) //replaced by url
+    if(image==='') //replaced by url
     {
         setErr(true)
         setMsg('Please generate an image firstly')
     }
     else{
-              // fetch to post it with the shared files
+        fetch("http://localhost:8000/addPost", { 
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                   },
+                   body: JSON.stringify({
+                    
+                        "name" :name , 
+                        "description" :  description, 
+                        "image" : image
+            
+                  })
+              }).then(res=>{
+                 return res.json()
+              }).then(data=>{
+
+                navigate('/home')
+            }).catch(err=>{
+                setErr(true)
+                setMsg("Error in sharing ")
+              })
     }
 }
 const handleSurprise =()=>{
@@ -67,18 +120,22 @@ const handleSurprise =()=>{
                 <textarea name="description" type="text" value={description} onChange={(e)=>{setDescription(e.target.value)}} placeholder="A man walking through the bustling streets of Kowloon at night, lit by many bright neon shop signs, 50mm lens" className="bg-[#C3B5B5] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] w-full rounded-md text-[#000] p-2" />
             </div> 
            {load && <div className="   lg:w-[160px] md:w-[100px] sm:w-[80px] w-[70px]  bg-[#D9D9D9] lg:mt-5 md:mt-4 sm:mt-3 mt-2 rounded-md border-2">
-                 <div className="relative ">
+                 <a href={image} className="relative ">
                     <Loader  />
                     <img src={image} alt="load" className="opacity-50"/>
-                 </div>
+                 </a>
           </div>}
-           {!load && <div className="lg:w-[160px] md:w-[100px] sm:w-[80px] w-[70px]  bg-[#D9D9D9] lg:mt-5 md:mt-4 sm:mt-3 mt-2 rounded-md border-2">
+           {!load && <a href={image} className="lg:w-[160px] md:w-[100px] sm:w-[80px] w-[70px]  bg-[#D9D9D9] lg:mt-5 md:mt-4 sm:mt-3 mt-2 rounded-md border-2">
                 <img src={image} alt="load" className=""/>
-           </div>}
+           </a>}
           {Err && <h3 className=" text-red-600 font-semibold lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px]">{message}</h3>}
            <button className="rounded-full px-2 py-1 mt-1 bg-[#199F16] hover:bg-[#0b580a] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] text-white" onClick={handleGenerate}>Generate</button>
            <div className="w-[65%] flex flex-col justify-center items-center ">
-                <button className=" self-end rounded-lg px-2 py-1 mt-1 bg-[#3330CC] hover:bg-[#0e0d62] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] text-white" onClick={handleShare}>Share it with the community </button>
+            <div className="self-end flex items-center sm:mt-4 mt-2">
+                <button onClick={Download}  className=" rounded-lg px-2 py-1 mt-1 lg:w-10 md:w-9 sm:w-8 w-7 bg-[#199F16] hover:bg-[#0b580a] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] text-white" ><img src={down} alt="download" /></button>
+                <button className="  rounded-lg px-2 py-1 mt-1 bg-[#3330CC] hover:bg-[#0e0d62] lg:text-[16px] md:text-[14px] sm:text-[12px] text-[10px] text-white" onClick={handleShare}>Share it with the community </button>
+            </div>
+                
            </div>
         </div>
     </section> );
