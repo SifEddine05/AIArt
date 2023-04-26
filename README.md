@@ -14,7 +14,7 @@ Simply type in a description of the image you want, and watch as AIArt brings yo
 
 ## Demo
 
-link to demo :"https://ai-art-9p23.onrender.com/getAllPosts"
+link to demo :https://ai-art5.netlify.app/
 
 
 ## Deployment
