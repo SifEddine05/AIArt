@@ -103,7 +103,7 @@ const Home = () => {
             let prec = e-1
            
             return( 
-            <div id={"slide"+e} className="carousel-item relative w-[100%] flex justify-between ">
+            <div id={"slide"+e} className="carousel-item relative w-[100%] sm:flex sm:flex-row  flex flex-col justify-between ">
             <div className="grid grid-cols-3  mt-10 gap-5 mx-auto">
 
             { posts.slice(e*3,e*3+3).map((elem)=>{
